@@ -7,6 +7,9 @@
 </head>
 <body>
     <h1>Upgrade Simulator</h1>
+    <button onclick="simulateUpgrade()">開始超越</button>
+    <p id="result"></p>
+
     <script>
         function simulateUpgrade() {
             var maxTries = 7;
@@ -19,10 +22,12 @@
             var stoneUses = 0;
             var scrollUses = 0;
 
+            var result = document.getElementById("result");
+
             while (equipmentLevel < 5) {
                 if (failedAttempts >= maxTries) {
-                    var useScroll = prompt("失敗次數已達上限，是否使用扣除卷軸？(yes/no)").trim().toLowerCase();
-                    while (useScroll === 'yes') {
+                    var useScroll = confirm("失敗次數已達上限，是否使用扣除卷軸？");
+                    while (useScroll) {
                         if (Math.random() < 0.30) {
                             alert("使用扣除卷軸成功，扣除1次超越失敗次數");
                             failedAttempts -= 1;
@@ -30,54 +35,49 @@
                             break;
                         } else {
                             alert("使用扣除卷軸失敗，請重新嘗試。");
-                            useScroll = prompt("是否再次使用扣除卷軸？(yes/no)").trim().toLowerCase();
+                            useScroll = confirm("是否再次使用扣除卷軸？");
                             scrollUses += 1;
                         }
                     }
-                    if (useScroll !== 'yes') {
+                    if (!useScroll) {
                         alert("超越失敗次數已達上限，無法繼續超越。");
                         break;
                     }
                 }
 
-                var stoneChoice = prompt("請選擇超越石:\n1. 30%的超越石\n2. 6%的超越石").trim();
+                var stoneChoice = confirm("請選擇超越石:\n按確認使用30%的超越石\n按取消使用6%的超越石");
                 var successRate, stoneType;
-                if (stoneChoice === '1') {
+                if (stoneChoice) {
                     successRate = 0.30;
                     stoneType = "30%的超越石";
                     stoneUses += 1;
-                } else if (stoneChoice === '2') {
+                } else {
                     successRate = 0.06;
                     stoneType = "6%的超越石";
                     stoneUses += 1;
-                } else {
-                    alert("請輸入有效的選擇(1或2)。");
-                    continue;
                 }
 
                 successRate += bonusRate;
 
                 if (Math.random() < successRate) {
                     equipmentLevel += 1;
-                    alert("成功使用" + stoneType + "，當前等級: " + equipmentLevel);
+                    result.innerHTML += "成功使用" + stoneType + "，當前等級: " + equipmentLevel + "<br>";
                     bonusRate = 0.0;
                 } else {
                     failedAttempts += 1;
                     bonusRate = Math.min(bonusRate + bonusIncrement, maxBonus);
-                    alert("失敗使用" + stoneType + "，當前輔助機率: " + bonusRate.toFixed(2));
+                    result.innerHTML += "失敗使用" + stoneType + "，當前輔助機率: " + bonusRate.toFixed(2) + "<br>";
                 }
 
-                alert("當前超越失敗次數: " + failedAttempts + "/" + maxTries);
+                result.innerHTML += "當前超越失敗次數: " + failedAttempts + "/" + maxTries + "<br>";
             }
 
             if (equipmentLevel === 5) {
-                alert("成功達到等級5\n超越石使用次數: " + stoneUses + "\n扣除卷軸使用次數: " + scrollUses);
+                result.innerHTML += "成功達到等級5<br>超越石使用次數: " + stoneUses + "<br>扣除卷軸使用次數: " + scrollUses;
             } else {
-                alert("最終等級: " + equipmentLevel);
+                result.innerHTML += "最終等級: " + equipmentLevel;
             }
         }
-
-        simulateUpgrade();
     </script>
 </body>
 </html>
